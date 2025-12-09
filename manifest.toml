@@ -1,6 +1,5 @@
 packaging_format = 2
 
-[main]
 id = "beszel"
 name.en = "Beszel"
 name.fr = "Beszel"
