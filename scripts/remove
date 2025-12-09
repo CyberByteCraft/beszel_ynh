@@ -1,0 +1,52 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# REMOVE SERVICE
+#=================================================
+
+# Stop and disable service
+systemctl stop $app.service 2>/dev/null || true
+systemctl disable $app.service 2>/dev/null || true
+rm -f /etc/systemd/system/$app.service
+systemctl daemon-reload
+
+#=================================================
+# REMOVE NGINX CONFIGURATION
+#=================================================
+
+ynh_remove_nginx_config --domain=$domain --path_url=$path_url
+
+#=================================================
+# REMOVE APP FILES
+#=================================================
+
+ynh_secure_remove --file="$install_dir"
+ynh_secure_remove --file="$data_dir"
+
+#=================================================
+# REMOVE DEDICATED USER
+#=================================================
+
+ynh_system_user_delete --username=$app
+
+#=================================================
+# REMOVE PERMISSIONS
+#=================================================
+
+ynh_permission_delete --permission="main"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Beszel wurde erfolgreich entfernt!"
+

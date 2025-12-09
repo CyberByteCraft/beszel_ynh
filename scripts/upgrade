@@ -1,0 +1,54 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# BACKUP BEFORE UPGRADE
+#=================================================
+
+ynh_backup_before_upgrade
+
+#=================================================
+# STOP SERVICE
+#=================================================
+
+ynh_systemd_action --service_name=$app --action=stop
+
+#=================================================
+# DOWNLOAD AND SETUP SOURCES
+#=================================================
+
+# Backup current binary
+cp "$install_dir/hub" "$install_dir/hub.backup" 2>/dev/null || true
+
+# Download new sources
+ynh_setup_source --dest_dir="$install_dir" --source_id=main
+
+# Make the binary executable
+chmod +x "$install_dir/hub"
+
+#=================================================
+# RESTART SERVICE
+#=================================================
+
+ynh_systemd_action --service_name=$app --action=start --log_path=systemd
+
+#=================================================
+# RELOAD NGINX
+#=================================================
+
+ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Beszel wurde erfolgreich aktualisiert!"
+

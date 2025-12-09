@@ -1,0 +1,135 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source /usr/share/yunohost/helpers
+
+#=================================================
+# RETRIEVE ARGUMENTS
+#=================================================
+
+app=$YNH_APP_INSTANCE_NAME
+domain=$YNH_APP_ARG_DOMAIN
+path_url=$YNH_APP_ARG_PATH
+admin=$YNH_APP_ARG_ADMIN
+is_public=$YNH_APP_ARG_IS_PUBLIC
+
+#=================================================
+# CHECK ARGUMENTS
+#=================================================
+
+ynh_script_progression --message="Validating arguments..."
+
+# Normalize the path
+path_url=$(ynh_normalize_url_path --path=$path_url)
+
+#=================================================
+# DEFINE VARIABLES
+#=================================================
+
+install_dir=/opt/beszel
+data_dir=/var/lib/beszel
+port=$(ynh_find_port --port=8080 --other_port=8081,8082,8083,8084,8085)
+
+#=================================================
+# MANAGE SOURCE CODE
+#=================================================
+
+ynh_script_progression --message="Downloading Beszel..."
+
+# Download and setup sources
+ynh_setup_source --dest_dir="$install_dir" --source_id=main
+
+# Make the binary executable
+chmod +x "$install_dir/hub"
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+
+ynh_system_user_create --username=$app --home_dir="$data_dir" --use_shell
+
+#=================================================
+# STORE SETTINGS STATE
+#=================================================
+
+ynh_app_setting_set --app=$app --key=final_path --value=$install_dir
+ynh_app_setting_set --app=$app --key=data_dir --value=$data_dir
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=path --value=$path_url
+ynh_app_setting_set --app=$app --key=port --value=$port
+ynh_app_setting_set --app=$app --key=admin --value=$admin
+ynh_app_setting_set --app=$app --key=is_public --value=$is_public
+
+#=================================================
+# CREATE DATA DIRECTORY
+#=================================================
+
+mkdir -p "$data_dir"
+chown -R $app:$app "$data_dir"
+
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+
+ynh_script_progression --message="Configuring NGINX..."
+
+ynh_add_nginx_config --port=$port --domain=$domain --path_url=$path_url
+
+#=================================================
+# SYSTEMD SERVICE
+#=================================================
+
+ynh_script_progression --message="Creating systemd service..."
+
+# Create systemd service
+cat > /etc/systemd/system/$app.service <<EOF
+[Unit]
+Description=Beszel Hub
+After=network.target
+
+[Service]
+Type=simple
+User=$app
+WorkingDirectory=$install_dir
+ExecStart=$install_dir/hub --data-dir=$data_dir --port=$port
+Restart=always
+RestartSec=10
+Environment="HOME=$data_dir"
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Enable and start the service
+systemctl daemon-reload
+systemctl enable $app.service
+ynh_systemd_action --service_name=$app --action=start --log_path=systemd
+
+#=================================================
+# SETUP SSOWAT
+#=================================================
+
+ynh_script_progression --message="Configuring SSOwat..."
+
+if [ "$is_public" = "0" ] || [ "$is_public" = "false" ]; then
+    ynh_permission_create --permission="main" --url="$path_url" --allowed="$admin"
+fi
+
+#=================================================
+# RELOAD NGINX
+#=================================================
+
+ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Beszel wurde erfolgreich installiert!"
+ynh_print_info "Zugriff über: https://$domain$path_url"
+
