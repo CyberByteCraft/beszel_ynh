@@ -18,6 +18,13 @@ dest_dir = "/opt/beszel"
 
 [integration]
 yunohost = ">= 11.1.0"
+architectures = ["amd64"]
+multi_instance = false
+ldap = "not_relevant"
+sso = "not_relevant"
+disk = "100M"
+ram.build = "100M"
+ram.runtime = "100M"
 
 [arguments]
 domain = { type = "domain" }
