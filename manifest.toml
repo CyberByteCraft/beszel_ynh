@@ -16,7 +16,7 @@ install_type = "private"
 url = "https://github.com/henrygd/beszel/releases/download/v0.17.0/hub_linux_amd64.tar.gz"
 dest_dir = "/opt/beszel"
 
-[requirements]
+[integration]
 yunohost = ">= 11.1.0"
 
 [arguments]
