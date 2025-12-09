@@ -1,0 +1,17 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check shell scripts
+        run: |
+          shellcheck scripts/*.sh scripts/install scripts/remove scripts/upgrade scripts/backup scripts/restore || true
+
