@@ -44,6 +44,13 @@ ynh_script_progression --message="Downloading Beszel..."
 # Download and setup sources
 ynh_setup_source --dest_dir="$install_dir" --source_id=main
 
+# Extract the binary from the tar.gz archive
+if [ -f "$install_dir/hub_linux_amd64.tar.gz" ]; then
+    cd "$install_dir"
+    tar -xzf hub_linux_amd64.tar.gz
+    rm -f hub_linux_amd64.tar.gz
+fi
+
 # Make the binary executable
 chmod +x "$install_dir/hub"
 
