@@ -3,4 +3,7 @@
 *~
 .DS_Store
 *.log
+manifest_v1.toml
+*HEAD*
+*t.toml*
 
