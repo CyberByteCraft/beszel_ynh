@@ -12,6 +12,8 @@ url = "https://github.com/henrygd/beszel"
 multi_instance = false
 install_type = "private"
 
+[resources]
+[resources.sources]
 [resources.sources.main]
 url = "https://github.com/henrygd/beszel/releases/download/v0.17.0/hub_linux_amd64.tar.gz"
 dest_dir = "/opt/beszel"
@@ -31,4 +33,3 @@ domain = { type = "domain" }
 path = { type = "path", default = "/beszel" }
 admin = { type = "user", default = "admin" }
 is_public = { type = "boolean", default = false }
-
