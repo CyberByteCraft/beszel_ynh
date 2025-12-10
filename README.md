@@ -18,11 +18,25 @@ Beszel ist eine leichte Server-Monitoring-Plattform mit historischen Daten, Dock
 
 ## Installation
 
-1. Laden Sie das App-Paket herunter
-2. Installieren Sie es über die YunoHost-Administrationsoberfläche oder über die Kommandozeile:
+### Über die YunoHost-Web-Oberfläche
+
+1. Gehen Sie zu "Apps" → "Installieren"
+2. Geben Sie die Repository-URL ein: `https://github.com/CyberByteCraft/beszel_ynh`
+3. Folgen Sie den Installationsanweisungen
+
+### Über die Kommandozeile
 
 ```bash
-sudo yunohost app install beszel_ynh --args 'domain=yourdomain.tld&path=/beszel&admin=admin'
+sudo yunohost app install https://github.com/CyberByteCraft/beszel_ynh \
+  --args 'domain=yourdomain.tld&path=/beszel&admin=admin&is_public=false'
+```
+
+Oder mit dem App-Namen:
+
+```bash
+sudo yunohost app install beszel \
+  --args 'domain=yourdomain.tld&path=/beszel&admin=admin&is_public=false' \
+  -u https://github.com/CyberByteCraft/beszel_ynh
 ```
 
 ## Konfiguration
