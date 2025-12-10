@@ -1,0 +1,34 @@
+packaging_format = 2
+
+id = "beszel"
+name.en = "Beszel"
+name.fr = "Beszel"
+description.en = "Lightweight server monitoring hub with historical data, docker stats, and alerts."
+description.fr = "Plateforme de surveillance de serveur légère avec données historiques, statistiques Docker et alertes."
+version = "0.17.0~ynh1"
+maintainers = ["CyberByteCraft"]
+license = "MIT"
+url = "https://github.com/henrygd/beszel"
+multi_instance = false
+install_type = "private"
+
+[resources.sources.main]
+url = "https://github.com/henrygd/beszel/releases/download/v0.17.0/hub_linux_amd64.tar.gz"
+dest_dir = "/opt/beszel"
+
+[integration]
+yunohost = ">= 11.1.0"
+architectures = ["amd64"]
+multi_instance = false
+ldap = "not_relevant"
+sso = "not_relevant"
+disk = "100M"
+ram.build = "100M"
+ram.runtime = "100M"
+
+[arguments]
+domain = { type = "domain" }
+path = { type = "path", default = "/beszel" }
+admin = { type = "user", default = "admin" }
+is_public = { type = "boolean", default = false }
+
